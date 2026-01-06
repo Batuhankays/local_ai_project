@@ -18,13 +18,13 @@ class EngineeringAssistant:
         self,
         vector_db_path: str = './data/vector_store/vectordb.pkl',
         fault_db_path: str = 'dokumanlar/ariza_kodlari.json',
-        ollama_model: str = 'llama3.1:8b'
+        ollama_model: str = 'mistral'
     ):
         """
         Args:
             vector_db_path: Vektör veritabanı yolu
             fault_db_path: Arıza kodları JSON yolu
-            ollama_model: Ollama model adı (llama3.1:8b önerilen)
+            ollama_model: Ollama model adı (mistral - en stabil)
         """
         print("🤖 Mühendislik Asistanı başlatılıyor...\n")
         

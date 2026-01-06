@@ -94,40 +94,18 @@ if errorlevel 1 (
     echo.
     echo Cozum:
     echo   1. Ollama yukleyin: https://ollama.ai/download
-    echo   2. Kurulum sonrasi terminal apin:
-    echo      ollama pull llama3.1:8b
+    echo   2. Kurulum sonrasi:
+    echo      ollama pull llama3.2:3b
     echo.
-    echo Devam etmek icin bir tusa basin...
     pause
     goto :skip_model_check
 )
 
-REM Llama3.1 modeli kontrolü
-echo [BILGI] Llama3.1:8b modeli kontrol ediliyor...
-ollama list | findstr /C:"llama3.1" >nul 2>&1
-if errorlevel 1 (
-    echo.
-    echo [UYARI] Llama3.1:8b modeli bulunamadi!
-    echo.
-    echo Bu model MISTRAL'a gore Turkce'de cok daha iyi.
-    echo Model indirilsin mi? (2-3 dakika, 4.7GB)
-    echo.
-    choice /C YN /M "Llama3.1:8b modelini indir"
-    if errorlevel 2 goto :skip_model_check
-    if errorlevel 1 (
-        echo.
-        echo [BILGI] Llama3.1:8b modeli indiriliyor...
-        ollama pull llama3.1:8b
-        if errorlevel 1 (
-            echo [HATA] Model indirilemedi!
-            pause
-        ) else (
-            echo [OK] Model basariyla indirildi
-        )
-    )
-) else (
-    echo [OK] Llama3.1:8b modeli mevcut
-)
+echo [OK] Ollama calisiy or
+echo.
+echo [BILGI] llama3.2:3b modeli kullanilacak
+echo   Yoksa indirmek icin: ollama pull llama3.2:3b
+echo.
 
 :skip_model_check
 

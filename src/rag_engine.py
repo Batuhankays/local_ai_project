@@ -148,10 +148,10 @@ class VectorStore:
 class OllamaLLM:
     """Ollama LLM entegrasyonu"""
     
-    def __init__(self, model: str = "llama3.1:8b", url: str = "http://localhost:11434"):
+    def __init__(self, model: str = "mistral", url: str = "http://localhost:11434"):
         """
         Args:
-            model: Ollama model adı (llama3.1:8b önerilen)
+            model: Ollama model adı (mistral - en stabil)
             url: Ollama API URL
         """
         self.model = model
@@ -173,7 +173,7 @@ class OllamaLLM:
         system: str = "",
         temperature: float = 0.3,
         top_p: float = 0.9,
-        max_tokens: int = 1024
+        max_tokens: int = 512  # Azaltıldı: 1024 -> 512 (bellek tasarrufu)
     ) -> str:
         """
         Ollama ile cevap üret
@@ -209,6 +209,7 @@ class OllamaLLM:
                     'temperature': temperature,
                     'top_p': top_p,
                     'num_predict': max_tokens,
+                    'num_ctx': 2048,  # Context window azaltıldı
                 }
             )
             
@@ -220,7 +221,14 @@ class OllamaLLM:
                 return (f"Ollama hatası: model '{self.model}' not found (status code: 404)\n\n"
                        f"Model indirmek için terminalde çalıştırın:\n"
                        f"  ollama pull {self.model}\n\n"
-                       f"Veya farklı bir model kullanın (mistral, gemma2:9b vb.)")
+                       f"Veya farklı bir model kullanın (llama3.2:3b, gemma2:9b vb.)")
+            if "exit status 2" in error_msg or "terminated" in error_msg:
+                return (f"⚠️ Ollama inference hatası oluştu.\n\n"
+                       f"Çözüm:\n"
+                       f"1. Terminal açın: taskkill /F /IM ollama.exe\n"
+                       f"2. Ollama'yı yeniden başlatın\n"
+                       f"3. Web arayüzünü yenileyin\n\n"
+                       f"Sorun devam ederse farklı bir soru deneyin (daha kısa).")
             return f"Ollama hatası: {str(e)}\n\nOllama'nın çalıştığından ve '{self.model}' modelinin yüklü olduğundan emin olun."
 
 

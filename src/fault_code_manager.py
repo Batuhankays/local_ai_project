@@ -20,6 +20,7 @@ class FaultCodeManager:
         """
         self.db_path = db_path
         self.fault_codes = []
+        self.generators = []  # Jeneratör listesi
         self.load_fault_codes()
     
     def load_fault_codes(self) -> None:
@@ -30,8 +31,9 @@ class FaultCodeManager:
         with open(self.db_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             self.fault_codes = data.get('fault_codes', [])
+            self.generators = data.get('generators', [])
         
-        print(f"✓ {len(self.fault_codes)} arıza kodu yüklendi")
+        print(f"✓ {len(self.generators)} jeneratör ve {len(self.fault_codes)} arıza kodu yüklendi")
     
     def search_by_code(self, code: str) -> Optional[Dict]:
         """
@@ -134,6 +136,42 @@ class FaultCodeManager:
             fault for fault in self.fault_codes 
             if fault.get('severity') == 'CRITICAL'
         ]
+    
+    def get_generators(self) -> List[Dict]:
+        """Tüm jeneratörleri getir"""
+        return self.generators
+    
+    def search_by_generator(self, generator_id: str) -> List[Dict]:
+        """
+        Belirli bir jeneratöre ait arıza kodlarını getir
+        
+        Args:
+            generator_id: Jeneratör ID'si (örn: "general", "caterpillar_3406")
+        
+        Returns:
+            İlgili arıza kodları listesi
+        """
+        results = []
+        for fault in self.fault_codes:
+            gen_ids = fault.get('generator_ids', [])
+            if generator_id in gen_ids:
+                results.append(fault)
+        return results
+    
+    def get_generator_by_id(self, generator_id: str) -> Optional[Dict]:
+        """
+        ID'ye göre jeneratör bilgisi getir
+        
+        Args:
+            generator_id: Jeneratör ID'si
+        
+        Returns:
+            Jeneratör bilgisi veya None
+        """
+        for gen in self.generators:
+            if gen.get('id') == generator_id:
+                return gen
+        return None
     
     def format_fault_info(self, fault: Dict) -> str:
         """

@@ -387,6 +387,45 @@ elif page == "🔍 Arıza Kodları":
     
     fault_manager = FaultCodeManager()
     
+    # Jeneratör seçimi
+    st.markdown("### 🏭 Jeneratör Seçimi")
+    
+    generators = fault_manager.get_generators()
+    generator_options = ["Tümü"] + [f"{g['manufacturer']} - {g['model']}" for g in generators]
+    generator_ids = [None] + [g['id'] for g in generators]
+    
+    selected_index = st.selectbox(
+        "Jeneratör Modeli",
+        range(len(generator_options)),
+        format_func=lambda x: generator_options[x],
+        help="Filtrelemek için bir jeneratör seçin"
+    )
+    
+    selected_generator_id = generator_ids[selected_index]
+    
+    # Seçili jeneratör bilgisi
+    if selected_generator_id and selected_generator_id != "general":
+        gen_info = fault_manager.get_generator_by_id(selected_generator_id)
+        if gen_info:
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Üretici", gen_info.get('manufacturer', 'N/A'))
+            with col2:
+                st.metric("Model", gen_info.get('model', 'N/A'))
+            with col3:
+                power = gen_info.get('power_kva')
+                st.metric("Güç", f"{power} kVA" if power else "N/A")
+    
+    st.markdown("---")
+    
+    # Arıza kodlarını filtrele
+    if selected_generator_id:
+        displayed_faults = fault_manager.search_by_generator(selected_generator_id)
+    else:
+        displayed_faults = fault_manager.fault_codes
+    
+    st.caption(f"📋 {len(displayed_faults)} arıza kodu gösteriliyor")
+    
     tab1, tab2, tab3 = st.tabs(["Kod Ara", "Belirti Ara", "Tüm Kodlar"])
     
     # TAB 1: Kod Ara
@@ -401,6 +440,12 @@ elif page == "🔍 Arıza Kodları":
         
         if search_btn and code_input:
             fault = fault_manager.search_by_code(code_input.upper())
+            
+            # Seçili jeneratörde bu kod var mı kontrol et
+            if fault and selected_generator_id:
+                if selected_generator_id not in fault.get('generator_ids', []):
+                    st.warning(f"⚠️ '{code_input}' kodu seçili jeneratörde yok. Başka jeneratör seçin veya 'Tümü'nü seçin.")
+                    fault = None
             
             if fault:
                 st.markdown(f"## {fault['code']}: {fault['name']}")
