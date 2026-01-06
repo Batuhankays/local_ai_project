@@ -30,14 +30,7 @@ pip install -r requirements.txt
 
 ## 🚀 Kurulum
 
-### Adım 1: Depoyu Klonlayın
-
-```bash
-git clone <repo-url>
-cd local_ai_project
-```
-
-### Adım 2: Sanal Ortam Oluşturun
+### Adım 1: Sanal Ortam Oluşturun
 
 ```bash
 python -m venv venv
@@ -47,13 +40,13 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### Adım 3: Bağımlılıkları Yükleyin
+### Adım 2: Bağımlılıkları Yükleyin
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Adım 4: Konfigürasyon
+### Adım 3: Konfigürasyon
 
 ```bash
 # .env dosyası oluşturun
@@ -62,7 +55,39 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-## 📖 Kullanım
+## 🌐 Web Arayüzü (Önerilen)
+
+**Kodlama bilmeden kullanmak için:**
+
+### Kolay Başlatma (Windows)
+
+```bash
+# BASLA.bat dosyasına çift tıklayın
+BASLA.bat
+```
+
+### Manuel Başlatma
+
+```bash
+streamlit run app.py
+```
+
+Tarayıcınızda `http://localhost:8501` açılacak.
+
+### Web Arayüzü Özellikleri
+
+- 📚 **Training Sayfası**: PDF yükleme ve training (sürükle-bırak)
+- 💬 **Chat Arayüzü**: Soru-cevap (WhatsApp tarzı)
+- 🔍 **Arıza Kodu Arama**: Görsel arayüz ile kod analizi
+- ⚙️ **Ayarlar**: Veri yönetimi
+
+**Detaylı bilgi:** [KULLANIM_KILAVUZU.md](KULLANIM_KILAVUZU.md)
+
+---
+
+## 💻 Komut Satırı (İleri Seviye)
+
+Terminalden kullanmak için:
 
 ### 1. PDF Manuellerini Ekleme
 
