@@ -103,6 +103,10 @@ def load_assistant():
     return True
 
 
+# Session state'i en başta başlat (sidebar'dan ÖNCE)
+init_session_state()
+
+
 # 📱 SIDEBAR - Navigasyon
 with st.sidebar:
     st.markdown("## 🔧 Mühendislik Asistanı")
@@ -535,6 +539,3 @@ elif page == "⚙️ Ayarlar":
         pdf_count = len([f for f in os.listdir(pdf_folder) if f.endswith('.pdf')])
         st.write(f"📄 Yüklü PDF: {pdf_count}")
 
-
-# Session state başlat
-init_session_state()

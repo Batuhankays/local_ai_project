@@ -148,10 +148,10 @@ class VectorStore:
 class OllamaLLM:
     """Ollama LLM entegrasyonu"""
     
-    def __init__(self, model: str = "mistral", url: str = "http://localhost:11434"):
+    def __init__(self, model: str = "llama3.1:8b", url: str = "http://localhost:11434"):
         """
         Args:
-            model: Ollama model adı
+            model: Ollama model adı (llama3.1:8b önerilen)
             url: Ollama API URL
         """
         self.model = model
@@ -162,18 +162,28 @@ class OllamaLLM:
         """Ollama bağlantısını kontrol et"""
         try:
             ollama.list()
-            print(f"✓ Ollama bağlantısı başarılı")
+            print(f"✓ Ollama bağlantısı başarılı (Model: {self.model})")
         except Exception as e:
             print(f"⚠️  Ollama bağlantı hatası: {e}")
             print("   Ollama'nın çalıştığından emin olun: ollama serve")
     
-    def generate(self, prompt: str, system: str = "") -> str:
+    def generate(
+        self, 
+        prompt: str, 
+        system: str = "",
+        temperature: float = 0.3,
+        top_p: float = 0.9,
+        max_tokens: int = 1024
+    ) -> str:
         """
         Ollama ile cevap üret
         
         Args:
             prompt: Kullanıcı prompt'u
             system: Sistem prompt'u
+            temperature: Yaratıcılık (0.0-1.0, düşük = daha deterministik)
+            top_p: Nucleus sampling
+            max_tokens: Maksimum token sayısı
         
         Returns:
             Üretilen cevap
@@ -194,12 +204,23 @@ class OllamaLLM:
             
             response = ollama.chat(
                 model=self.model,
-                messages=messages
+                messages=messages,
+                options={
+                    'temperature': temperature,
+                    'top_p': top_p,
+                    'num_predict': max_tokens,
+                }
             )
             
             return response['message']['content']
         
         except Exception as e:
+            error_msg = str(e)
+            if "404" in error_msg or "not found" in error_msg:
+                return (f"Ollama hatası: model '{self.model}' not found (status code: 404)\n\n"
+                       f"Model indirmek için terminalde çalıştırın:\n"
+                       f"  ollama pull {self.model}\n\n"
+                       f"Veya farklı bir model kullanın (mistral, gemma2:9b vb.)")
             return f"Ollama hatası: {str(e)}\n\nOllama'nın çalıştığından ve '{self.model}' modelinin yüklü olduğundan emin olun."
 
 
@@ -289,35 +310,78 @@ class RAGEngine:
         if context_chunks is None:
             context_chunks = self.retrieve_context(query, top_k=top_k)
         
-        # Context oluştur
-        context_text = ""
+        # System prompt - Gelişmiş versiyon
+        system_prompt = """Sen askeri jeneratör bakım ve arıza giderme konusunda uzman bir teknisyensin.
+
+GÖREVİN:
+1. Verilen teknik dokümanlara SADECE dayanarak cevap ver
+2. Emin olmadığın konularda "Bu bilgi dokümanlarımda yok" de
+3. Adım adım, net ve uygulanabilir çözümler sun
+4. Güvenlik önlemleri varsa MUTLAKA belirt
+
+CEVAP FORMATI:
+- Kısa özet ile başla (1-2 cümle)
+- Adım adım çözüm sun (numaralı liste)
+- Güvenlik uyarısı varsa belirt
+- Hangi doküman/bölümden aldığını belirt
+
+YAPMA:
+- Genel tavsiyeler verme, spesifik ol
+- Speküla
+
+syon yapma, sadece dokümanlara dayanarak cevap ver
+- Uzun giriş paragrafları yazma, direkt konuya gir
+- İngilizce kelime karıştırma
+
+Türkçe dil bilgisi kurallarına DİKKAT ET. Yazım hatası yapma."""
+
+        # Context metni oluştur
+        context_parts = []
         
         if context_chunks:
-            context_text += "İlgili Doküman Bilgileri:\n\n"
+            context_parts.append("📚 İLGİLİ DOKÜMAN BİLGİLERİ:\n")
             for i, chunk in enumerate(context_chunks, 1):
-                context_text += f"[Kaynak {i}: {chunk['source']}]\n"
-                context_text += f"{chunk['text']}\n\n"
+                context_parts.append(f"[Kaynak {i}: {chunk['source']}]")
+                context_parts.append(f"{chunk['text']}\n")
         
         if fault_info:
-            context_text += f"\nArıza Kodu Bilgisi:\n"
-            context_text += f"Kod: {fault_info.get('code')}\n"
-            context_text += f"İsim: {fault_info.get('name')}\n"
-            context_text += f"Kategori: {fault_info.get('category')}\n"
+            context_parts.append("\n🔧 ARIZA KODU BİLGİSİ:")
+            context_parts.append(f"Kod: {fault_info.get('code')}")
+            context_parts.append(f"İsim: {fault_info.get('name')}")
+            context_parts.append(f"Kategori: {fault_info.get('category')}")
+            context_parts.append(f"Önem: {fault_info.get('severity')}\n")
         
-        # Prompt oluştur
-        system_prompt = """Sen bir askeri jeneratör bakım uzmanısın. 
-Sana verilen teknik dokümanlar ve arıza kodu bilgilerine dayanarak 
-detaylı, pratik ve güvenli çözümler öner. 
-Cevaplarını Türkçe ver ve mümkünse adım adım açıkla."""
+        context_text = "\n".join(context_parts) if context_parts else "Not: İlgili doküman bulunamadı."
         
-        user_prompt = f"""Soru: {query}
+        # Yapılandırılmış user prompt
+        user_prompt = f"""SORU: {query}
 
-{context_text if context_text else "Not: İlgili doküman bulunamadı, genel bilgilerinle cevap ver."}
+{context_text}
 
-Yukarıdaki bilgilere dayanarak soruyu cevapla:"""
+CEVABINI ŞU FORMATTA VER:
+
+📋 ÖZET:
+[Tek cümle ile sorunun çözümü]
+
+🔧 ADIMLAR:
+1. [İlk adım - spesifik ve uygulanabilir]
+2. [İkinci adım - spesifik ve uygulanabilir]
+3. [Devam eden adımlar...]
+
+⚠️ GÜVENLİK:
+[Varsa güvenlik uyarıları, yoksa "Standart güvenlik önlemleri yeterli"]
+
+📚 KAYNAK:
+[Hangi doküman/bölümden - eğer dokümanda yoksa "Dokümanlarda bu bilgi yok" de]"""
         
-        # Cevap üret
-        answer = self.llm.generate(prompt=user_prompt, system=system_prompt)
+        # Cevap üret (düşük temperature = daha tutarlı)
+        answer = self.llm.generate(
+            prompt=user_prompt, 
+            system=system_prompt,
+            temperature=0.3,  # Düşük = deterministik
+            top_p=0.9,
+            max_tokens=1024
+        )
         
         return answer
     
