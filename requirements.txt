@@ -1,0 +1,23 @@
+# PDF ve Doküman İşleme
+PyPDF2>=3.0.0
+
+# Embedding ve NLP
+sentence-transformers>=2.2.0
+
+# Vektör Veritabanı
+faiss-cpu>=1.7.4
+chromadb>=0.4.0
+
+# LLM Entegrasyonu (Offline - Ollama)
+ollama>=0.1.0
+
+# RAG Pipeline
+langchain>=0.1.0
+langchain-community>=0.0.10
+
+# Utilities
+python-dotenv>=1.0.0
+tqdm>=4.65.0
+
+# Testing
+pytest>=7.4.0

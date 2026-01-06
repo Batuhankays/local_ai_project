@@ -1,0 +1,36 @@
+# Ortam değişkenleri
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Hassas jeneratör manuelleri - GitHub'a yüklenmesin!
+dokumanlar/manueller/**/*.pdf
+dokumanlar/manueller/**/*.txt
+dokumanlar/manueller/**/*.docx
+
+# RAG vektör veritabanı (train sonrası oluşur)
+data/vector_store/
+*.faiss
+*.index
+chroma_db/
+
+# Ollama indirilen modeller (zaten sistemde)
+.ollama/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

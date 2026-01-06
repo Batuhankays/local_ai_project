@@ -1,0 +1,3 @@
+# Bu klasör hassas PDF manuellerini içerir
+# .gitkeep dosyası boş klasörü Git'te tutmak içindir
+# PDF ekledikçe .gitignore onları koruyacaktır
