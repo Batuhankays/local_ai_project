@@ -1,95 +1,114 @@
-# Mühendislik Asistanı - Offline RAG Sistemi
+# Offline Mühendislik Asistanı
 
-**Tamamen offline çalışan** bir mühendislik bilgi asistanı. Jeneratör teknik dokümanlarını (PDF) okuyup, arıza kodlarını analiz eder ve Ollama kullanarak akıllı öneriler sunar.
+Jeneratör teknik dokümanlarını işleyen ve arıza analizi yapan yapay zeka destekli offline bilgi sistemi.
 
-## ✨ Özellikler
+## Genel Bakış
 
-- 🔒 **Tamamen Offline**: İnternet bağlantısı gerektirmez (Ollama ile)
-- 📚 **RAG Sistemi**: PDF manuellerden bilgi çıkarma
-- 🔧 **Arıza Kodu Analizi**: Jeneratör hata kodları ve çözümleri
-- 🤖 **Akıllı Sorgulama**: Doğal dilde soru sorma
-- 🔐 **Güvenli**: Hassas PDF'ler GitHub'a yüklenmez
+Bu sistem, PDF formatındaki teknik manüelleri analiz ederek RAG (Retrieval-Augmented Generation) teknolojisi ile sorulara yanıt verir. Tüm işlemler yerel ortamda gerçekleştirilir ve internet bağlantısı gerektirmez.
 
-## 📋 Gereksinimler
+## Temel Özellikler
 
-### 1. Ollama Kurulumu
+- Tamamen offline çalışma - Veri güvenliği
+- PDF doküman işleme ve indeksleme
+- Çok jeneratörlü arıza kodu yönetimi
+- Doğal dil sorgu desteği
+- Web tabanlı kullanıcı arayüzü
+- Türkçe dil desteği
+
+## Hızlı Başlangıç
+
+### Ön Gereksinimler
+
+**Ollama Kurulumu**
+
+Sistem, local LLM çalıştırmak için Ollama kullanmaktadır:
+
+1. [Ollama](https://ollama.ai/download) indirip kurun
+2. Kurulum tamamlandıktan sonra devam edin
+
+### Kurulum
+
+**Windows Kullanıcıları İçin**
+
+Projeyi indirdikten sonra `BASLA.bat` dosyasını çalıştırın. Script otomatik olarak:
+
+- Python sanal ortamı oluşturur
+- Gerekli bağımlılıkları yükler
+- Ollama modellerini kontrol eder (eksik modelleri indirme seçeneği sunar)
+- Web arayüzünü başlatır
+
+İlk çalıştırmada model indirme sürecinden dolayı kurulum 5-10 dakika sürebilir. Sonraki çalıştırmalarda sistem birkaç saniye içinde hazır hale gelir.
+
+**Diğer Platformlar veya Manuel Kurulum**
 
 ```bash
-# Ollama'yı indirin: https://ollama.ai/download
-# Kurulum sonrası model çekin:
-ollama pull mistral
-# veya
-ollama pull llama2
-```
-
-### 2. Python Bağımlılıkları
-
-```bash
-pip install -r requirements.txt
-```
-
-## 🚀 Kurulum
-
-### Adım 1: Sanal Ortam Oluşturun
-
-```bash
+# Sanal ortam oluştur
 python -m venv venv
+
+# Sanal ortamı aktifleştir
 # Windows:
 venv\Scripts\activate
 # Linux/Mac:
 source venv/bin/activate
-```
 
-### Adım 2: Bağımlılıkları Yükleyin
-
-```bash
+# Bağımlılıkları yükle
 pip install -r requirements.txt
-```
 
-### Adım 3: Konfigürasyon
+# Ollama modellerini yükle
+ollama pull mistral
+ollama pull llama3.2:3b
 
-```bash
-# .env dosyası oluşturun
-copy .env.example .env
-# veya Linux/Mac:
-cp .env.example .env
-```
-
-## 🌐 Web Arayüzü (Önerilen)
-
-**Kodlama bilmeden kullanmak için:**
-
-### Kolay Başlatma (Windows)
-
-```bash
-# BASLA.bat dosyasına çift tıklayın
-BASLA.bat
-```
-
-### Manuel Başlatma
-
-```bash
+# Web arayüzünü başlat
 streamlit run app.py
 ```
 
-Tarayıcınızda `http://localhost:8501` açılacak.
+### Kullanım
 
-### Web Arayüzü Özellikleri
+Web arayüzü `http://localhost:8501` adresinde açılacaktır.
 
-- 📚 **Training Sayfası**: PDF yükleme ve training (sürükle-bırak)
-- 💬 **Chat Arayüzü**: Soru-cevap (WhatsApp tarzı)
-- 🔍 **Arıza Kodu Arama**: Görsel arayüz ile kod analizi
-- ⚙️ **Ayarlar**: Veri yönetimi
+**Training İşlemi**
 
-**Detaylı bilgi:** [KULLANIM_KILAVUZU.md](KULLANIM_KILAVUZU.md)
+1. Training sekmesine gidin
+2. PDF dokümanları yükleyin (sürükle-bırak veya dosya seçici)
+3. "Training Başlat" butonuna tıklayın
+4. İşlem tamamlandığında sistem kullanıma hazırdır
+
+**Sorgulama**
+
+Sorgulama sekmesinden sisteme soru sorabilirsiniz:
+
+Örnek:
+- "E101 arıza kodunun anlamı nedir?"
+- "Cos 0.9 güç faktöründe voltaj düşüşünün nedenleri nelerdir?"
+- "500 saatlik bakım periyodunda yapılması gereken işlemler"
+
+Detaylı kullanım bilgisi için `KULLANIM_KILAVUZU.md` dosyasına bakınız.
 
 ---
 
-## 💻 Komut Satırı (İleri Seviye)
+## Sistem Özellikleri
+
+**Offline Çalışma**  
+Tüm işlemler yerel sistemde gerçekleştirilir. Veri güvenliği sağlanmıştır.
+
+**RAG Sistemi**  
+Retrieval-Augmented Generation teknolojisi ile dokümanlardan ilgili bilgiler çıkarılır ve yanıtlarda kullanılır.
+
+**Çok Jeneratör Desteği**  
+Farklı jeneratör modellerine özel arıza kodları tanımlanabilir ve filtrelenebilir.
+
+**Arıza Kodu Yönetimi**  
+Jeneratöre özgü arıza kodları JSON formatında saklanır ve kategorize edilir.
+
+---
+
+## Gelişmiş Kullanım
+
+### Komut Satırı
 
 Terminalden kullanmak için:
 
-### 1. PDF Manuellerini Ekleme
+**PDF Manuellerini Ekleme**
 
 Jeneratör manuellerinizi `dokumanlar/manueller/` klasörüne kopyalayın:
 
@@ -101,9 +120,7 @@ dokumanlar/
       └── ...
 ```
 
-> ⚠️ **Önemli**: Bu dosyalar `.gitignore` ile korunuyor ve GitHub'a yüklenmeyecek.
-
-### 2. RAG Sistemini Eğitme (Training)
+**RAG Sistemini Eğitme (Training)**
 
 ```bash
 python scripts/train_rag.py
@@ -115,42 +132,26 @@ Bu komut:
 - Her parça için embedding oluşturur
 - Vektör veritabanına kaydeder
 
-**Beklenen Çıktı:**
-```
-✓ 5 PDF işlendi
-✓ 234 chunk oluşturuldu
-✓ Vektör DB kaydedildi: ./data/vector_store
-```
+**Asistanı Kullanma**
 
-### 3. Asistanı Kullanma
-
-#### Arıza Kodu Sorgulama
-
+Arıza kodu sorgulama:
 ```bash
 python main.py fault E101
 ```
 
-#### Doküman Tabanlı Sorgulama
-
+Doküman tabanlı sorgulama:
 ```bash
 python main.py query "500 saatlik bakımda hangi filtreler değişir?"
 ```
 
-#### İnteraktif Mod
-
+İnteraktif mod:
 ```bash
 python main.py interactive
 ```
 
-İnteraktif modda çalıştıktan sonra sorularınızı yazabilirsiniz:
-```
-🤖 Merhaba! Nasıl yardımcı olabilirim?
-> E101 ne demek?
-> Titreşim yüksekse ne yapmalıyım?
-> exit (çıkmak için)
-```
+---
 
-## 📁 Proje Yapısı
+## Proje Yapısı
 
 ```
 local_ai_project/
@@ -170,13 +171,17 @@ local_ai_project/
 │   ├── test_fault_codes.py
 │   └── test_ollama_connection.py
 ├── main.py                     # CLI arayüzü
+├── app.py                      # Web arayüzü
+├── BASLA.bat                   # Windows başlatma scripti
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
 └── README.md
 ```
 
-## 🧪 Testler
+---
+
+## Testler
 
 ```bash
 # Tüm testler
@@ -189,43 +194,65 @@ python tests/test_ollama_connection.py
 pytest tests/test_fault_codes.py -v
 ```
 
-## 🔒 Güvenlik
+---
 
-- **Hassas PDF'ler**: `dokumanlar/manueller/` klasörü `.gitignore` ile korunur
-- Her yeni ortamda (deployment, yeni makine) PDF'leri manuel olarak kopyalamanız gerekir
-- `.env` dosyası da GitHub'a yüklenmez
-
-## 🛠️ Sorun Giderme
+## Sorun Giderme
 
 ### Ollama Bağlantı Hatası
 
+Sistem Ollama servisine bağlanamıyorsa:
+
+1. Ollama'nın kurulu olduğundan emin olun: [https://ollama.ai/download](https://ollama.ai/download)
+2. `BASLA.bat` dosyasını tekrar çalıştırın
+3. Manuel kontrol için terminal açın ve `ollama list` komutunu çalıştırın
+
+### Model Bulunamadı Hatası
+
+Gerekli modeller yüklü değilse:
+
 ```bash
-# Ollama servisinin çalıştığından emin olun:
-ollama list
-# Model yoksa çekin:
 ollama pull mistral
+ollama pull llama3.2:3b
 ```
 
-### PDF Okuma Hatası
+Alternatif olarak, `BASLA.bat` ilk çalıştırmada model indirme seçeneği sunacaktır.
 
-PyPDF2 bazı PDF'leri okuyamayabilir. Alternatif olarak PDF'i tekrar export edin veya OCR kullanın.
+### PDF İşleme Hataları
 
-### Embedding Hatası
+Bazı PDF dosyaları şifreli veya taranmış görüntü formatında olabilir. Bu durumda PDF'i yeniden dışa aktarmayı deneyin.
 
-İlk çalıştırmada sentence-transformers modeli indirecektir (~100MB). İnternet bağlantınızın olduğundan emin olun. İndirildikten sonra offline çalışır.
+### Training Performansı
 
-## 📝 Lisans
+İlk training işleminde embedding modeli indirilir (yaklaşık 100MB). Bu işlem bir kerelik olup sonraki trainingler daha hızlı tamamlanır.
 
-MIT License
+### Ek Destek
 
-## 🤝 Katkıda Bulunma
+Detaylı troubleshooting bilgisi için `KULLANIM_KILAVUZU.md` dosyasına başvurunuz.
 
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
+---
+
+## Güvenlik
+
+- PDF dokümanları `dokumanlar/manueller/` dizininde saklanır ve `.gitignore` ile versiyon kontrol sistemine dahil edilmez
+- Tüm işlemler local sistemde gerçekleştirilir
+- Hassas veriler harici bir sunucuya iletilmez
+
+---
+
+## Katkıda Bulunma
+
+1. Projeyi fork edin
+2. Feature branch oluşturun (`git checkout -b feature/yeni-ozellik`)
+3. Değişikliklerinizi commit edin (`git commit -m 'Yeni özellik eklendi'`)
+4. Branch'i push edin (`git push origin feature/yeni-ozellik`)
 5. Pull Request oluşturun
 
 ---
 
-**Not**: Bu sistem askeri jeneratör bakımı için tasarlanmıştır. Kendi dokümanlarınızı ekleyerek farklı alanlarda da kullanabilirsiniz.
+## Lisans
+
+MIT License
+
+---
+
+**Not:** Bu sistem jeneratör bakım uygulamaları için geliştirilmiştir ancak farklı teknik doküman türleri için de kullanılabilir.

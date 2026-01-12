@@ -95,16 +95,64 @@ if errorlevel 1 (
     echo Cozum:
     echo   1. Ollama yukleyin: https://ollama.ai/download
     echo   2. Kurulum sonrasi:
+    echo      ollama pull mistral
     echo      ollama pull llama3.2:3b
     echo.
     pause
     goto :skip_model_check
 )
 
-echo [OK] Ollama calisiy or
+echo [OK] Ollama calisıyor
 echo.
-echo [BILGI] llama3.2:3b modeli kullanilacak
-echo   Yoksa indirmek icin: ollama pull llama3.2:3b
+
+REM Mistral modeli kontrolü
+echo [BILGI] Mistral modeli kontrol ediliyor...
+ollama list | findstr /C:"mistral" >nul 2>&1
+if errorlevel 1 (
+    echo [UYARI] Mistral modeli bulunamadi!
+    echo.
+    echo Mistral indirmek ister misiniz? (Stabil, 4GB)
+    choice /C YN /M "Mistral modelini indir"
+    if errorlevel 1 (
+        if not errorlevel 2 (
+            echo [BILGI] Mistral indiriliyor...
+            ollama pull mistral
+            if errorlevel 1 (
+                echo [HATA] Model indirilemedi!
+            ) else (
+                echo [OK] Mistral indirildi
+            )
+        )
+    )
+) else (
+    echo [OK] Mistral mevcut
+)
+
+echo.
+
+REM Llama3.2 modeli kontrolü
+echo [BILGI] Llama3.2:3b modeli kontrol ediliyor...
+ollama list | findstr /C:"llama3.2" >nul 2>&1
+if errorlevel 1 (
+    echo [UYARI] Llama3.2:3b modeli bulunamadi!
+    echo.
+    echo Llama3.2:3b indirmek ister misiniz? (Hizli, 2GB)
+    choice /C YN /M "Llama3.2:3b modelini indir"
+    if errorlevel 1 (
+        if not errorlevel 2 (
+            echo [BILGI] Llama3.2:3b indiriliyor...
+            ollama pull llama3.2:3b
+            if errorlevel 1 (
+                echo [HATA] Model indirilemedi!
+            ) else (
+                echo [OK] Llama3.2:3b indirildi
+            )
+        )
+    )
+) else (
+    echo [OK] Llama3.2:3b mevcut
+)
+
 echo.
 
 :skip_model_check
