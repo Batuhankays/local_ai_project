@@ -30,14 +30,19 @@ Sistem, local LLM çalıştırmak için Ollama kullanmaktadır:
 
 **Windows Kullanıcıları İçin**
 
-Projeyi indirdikten sonra `BASLA.bat` dosyasını çalıştırın. Script otomatik olarak:
+~~Projeyi indirdikten sonra~~ `BASLA.bat` ~~dosyasını çalıştırın. Script otomatik olarak:~~
 
-- Python sanal ortamı oluşturur
-- Gerekli bağımlılıkları yükler
-- Ollama modellerini kontrol eder (eksik modelleri indirme seçeneği sunar)
-- Web arayüzünü başlatır
+~~- Python sanal ortamı oluşturur~~
 
-İlk çalıştırmada model indirme sürecinden dolayı kurulum 5-10 dakika sürebilir. Sonraki çalıştırmalarda sistem birkaç saniye içinde hazır hale gelir.
+~~- Gerekli bağımlılıkları yükler~~
+
+~~- Ollama modellerini kontrol eder (eksik modelleri indirme seçeneği sunar)~~
+
+~~- Web arayüzünü başlatır~~
+
+~~İlk çalıştırmada model indirme sürecinden dolayı kurulum 5-10 dakika sürebilir. Sonraki çalıştırmalarda sistem birkaç saniye içinde hazır hale gelir.~~
+
+-Manuel kurulum tamamlandığında çalıştırılabilir, web arayüzünü otomatik olarak başlatır.
 
 **Diğer Platformlar veya Manuel Kurulum**
 
@@ -78,9 +83,8 @@ Web arayüzü `http://localhost:8501` adresinde açılacaktır.
 Sorgulama sekmesinden sisteme soru sorabilirsiniz:
 
 Örnek:
-- "E101 arıza kodunun anlamı nedir?"
 - "Cos 0.9 güç faktöründe voltaj düşüşünün nedenleri nelerdir?"
-- "500 saatlik bakım periyodunda yapılması gereken işlemler"
+- "Jeneratörün voltajı düşüyor, sebebi ne olabilir?"
 
 Detaylı kullanım bilgisi için `KULLANIM_KILAVUZU.md` dosyasına bakınız.
 
