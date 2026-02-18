@@ -1,32 +1,46 @@
 @echo off
-REM Mühendislik Asistanı - Kolay Başlatma Scripti
-REM Bu dosyayı çift tıklayarak web arayüzünü başlatın
+REM Muhendislik Asistani - Kolay Baslama Scripti
+chcp 65001 >nul
 
 echo ========================================
 echo    Muhendislik Asistani Baslatiliyor
 echo ========================================
 echo.
 
-REM Python kontrolü
-python --version >nul 2>&1
+REM ---- 1. PYTHON KONTROLU ----
+python --version >nul
 if errorlevel 1 (
     echo [HATA] Python yuklu degil!
     echo.
-    echo Lutfen Python yukleyin: https://www.python.org/downloads/
+    echo Cozum:
+    echo   1. https://www.python.org/downloads/ adresine gidin
+    echo   2. Download Python butonuna tiklayin
+    echo   3. Kurulum sirasinda "Add Python to PATH" kutusunu isaretleyin
+    echo   4. Kurulum bittikten sonra bu dosyayi tekrar calistirin
     echo.
     pause
     exit /b 1
 )
-
 echo [OK] Python bulundu
 echo.
 
-REM Sanal ortam kontrolü
-if not exist "venv\" (
-    echo [BILGI] Sanal ortam bulunamadi, olusturuluyor...
+REM ---- 2. SANAL ORTAM KONTROLU ----
+if exist "venv\Scripts\activate.bat" (
+    echo [OK] Sanal ortam mevcut
+    echo.
+) else (
+    if exist "venv\" (
+        echo [BILGI] Sanal ortam bozuk, yeniden olusturuluyor...
+        rmdir /s /q venv
+    ) else (
+        echo [BILGI] Ilk kurulum yapiliyor...
+    )
+    echo Bu islem 1-2 dakika surebilir, lutfen bekleyin...
     python -m venv venv
     if errorlevel 1 (
+        echo.
         echo [HATA] Sanal ortam olusturulamadi!
+        echo.
         pause
         exit /b 1
     )
@@ -34,35 +48,17 @@ if not exist "venv\" (
     echo.
 )
 
-REM Sanal ortamı aktifleştir
+REM ---- 3. SANAL ORTAMI AKTIFLE ----
 echo [BILGI] Sanal ortam aktive ediliyor...
-if exist "venv\Scripts\activate.bat" (
-    call venv\Scripts\activate.bat
-    echo [OK] Sanal ortam aktif
-    echo.
-) else (
-    echo [HATA] activate.bat bulunamadi!
-    echo Aranan konum: %CD%\venv\Scripts\activate.bat
-    pause
-    exit /b 1
-)
-
-REM Pip kontrolü
-echo [BILGI] Pip version kontrol ediliyor...
-pip --version
-if errorlevel 1 (
-    echo [HATA] Pip bulunamadi! Sanal ortam dogru aktive edilmemis olabilir.
-    pause
-    exit /b 1
-)
-echo [OK] Pip bulundu
+call venv\Scripts\activate.bat
+echo [OK] Sanal ortam aktif
 echo.
 
-REM Bağımlılıkları kontrol et
-echo [BILGI] Gerekli paketler kontrol ediliyor...
-pip show streamlit >nul 2>&1
+REM ---- 4. PAKET KURULUMU ----
+echo [BILGI] Paketler kontrol ediliyor...
+pip show streamlit >nul
 if errorlevel 1 (
-    echo [BILGI] Streamlit bulunamadi, TUM paketler yukleniyor...
+    echo [BILGI] Gerekli paketler yukleniyor...
     echo Bu islem 2-5 dakika surebilir, lutfen bekleyin...
     echo.
     pip install -r requirements.txt
@@ -72,7 +68,6 @@ if errorlevel 1 (
         echo.
         echo Olasilik 1: Internet baglantiniz yok
         echo Olasilik 2: requirements.txt dosyasi bulunamadi
-        echo Olasilik 3: Pip guncel degil (pip install --upgrade pip)
         echo.
         pause
         exit /b 1
@@ -81,99 +76,94 @@ if errorlevel 1 (
     echo [OK] Paketler yuklendi
     echo.
 ) else (
-    echo [OK] Streamlit zaten yuklu
+    echo [OK] Paketler zaten yuklu
     echo.
 )
 
-REM Ollama kontrolü
+REM ---- 5. OLLAMA KONTROLU ----
 echo [BILGI] Ollama kontrol ediliyor...
-ollama list >nul 2>&1
+ollama list >nul
 if errorlevel 1 (
     echo.
-    echo [UYARI] Ollama bulunamadi veya calismiyor!
+    echo [UYARI] Ollama bulunamadi!
     echo.
-    echo Cozum:
-    echo   1. Ollama yukleyin: https://ollama.ai/download
-    echo   2. Kurulum sonrasi:
-    echo      ollama pull mistral
-    echo      ollama pull llama3.2:3b
+    echo Ollama, yapay zeka motorudur ve zorunludur.
+    echo.
+    echo Kurulum adimlari:
+    echo   1. https://ollama.ai/download adresine gidin
+    echo   2. Download for Windows butonuna tiklayin
+    echo   3. Indirilen dosyayi calistirin ve kurun
+    echo   4. Kurulum bittikten sonra bu dosyayi tekrar calistirin
     echo.
     pause
-    goto :skip_model_check
+    exit /b 1
 )
-
-echo [OK] Ollama calisıyor
+echo [OK] Ollama calisiyor
 echo.
 
-REM Mistral modeli kontrolü
+REM ---- 6. MISTRAL MODEL KONTROLU ----
 echo [BILGI] Mistral modeli kontrol ediliyor...
-ollama list | findstr /C:"mistral" >nul 2>&1
+ollama list | findstr "mistral" >nul
 if errorlevel 1 (
-    echo [UYARI] Mistral modeli bulunamadi!
+    echo [UYARI] Mistral modeli yuklu degil! (yaklasik 4GB)
     echo.
-    echo Mistral indirmek ister misiniz? (Stabil, 4GB)
-    choice /C YN /M "Mistral modelini indir"
-    if errorlevel 1 (
-        if not errorlevel 2 (
-            echo [BILGI] Mistral indiriliyor...
-            ollama pull mistral
-            if errorlevel 1 (
-                echo [HATA] Model indirilemedi!
-            ) else (
-                echo [OK] Mistral indirildi
-            )
-        )
+    choice /C EN /M "Simdi indirilsin mi? (E=Evet, N=Hayir)"
+    if errorlevel 2 (
+        echo.
+        echo [BILGI] Mistral atlandi.
+        echo.
+        goto :check_llama
     )
+    echo.
+    echo [BILGI] Mistral indiriliyor, lutfen bekleyin...
+    ollama pull mistral
+    echo [OK] Mistral islemi tamamlandi
+    echo.
 ) else (
     echo [OK] Mistral mevcut
+    echo.
 )
 
-echo.
-
-REM Llama3.2 modeli kontrolü
+REM ---- 7. LLAMA3.2 MODEL KONTROLU ----
+:check_llama
 echo [BILGI] Llama3.2:3b modeli kontrol ediliyor...
-ollama list | findstr /C:"llama3.2" >nul 2>&1
+ollama list | findstr "llama3.2" >nul
 if errorlevel 1 (
-    echo [UYARI] Llama3.2:3b modeli bulunamadi!
+    echo [UYARI] Llama3.2:3b modeli yuklu degil! (yaklasik 2GB)
     echo.
-    echo Llama3.2:3b indirmek ister misiniz? (Hizli, 2GB)
-    choice /C YN /M "Llama3.2:3b modelini indir"
-    if errorlevel 1 (
-        if not errorlevel 2 (
-            echo [BILGI] Llama3.2:3b indiriliyor...
-            ollama pull llama3.2:3b
-            if errorlevel 1 (
-                echo [HATA] Model indirilemedi!
-            ) else (
-                echo [OK] Llama3.2:3b indirildi
-            )
-        )
+    choice /C EN /M "Simdi indirilsin mi? (E=Evet, N=Hayir)"
+    if errorlevel 2 (
+        echo.
+        echo [BILGI] Llama3.2:3b atlandi.
+        echo.
+        goto :start_app
     )
+    echo.
+    echo [BILGI] Llama3.2:3b indiriliyor, lutfen bekleyin...
+    ollama pull llama3.2:3b
+    echo [OK] Llama3.2:3b islemi tamamlandi
+    echo.
 ) else (
     echo [OK] Llama3.2:3b mevcut
+    echo.
 )
 
-echo.
-
-:skip_model_check
-
-REM Web arayüzünü başlat
-echo.
+REM ---- 8. WEB ARAYUZU ----
+:start_app
 echo ========================================
 echo   Web Arayuzu Baslatiliyor...
 echo ========================================
 echo.
-echo Tarayicinizda acilacak.
-echo Otomatik acilmazsa: http://localhost:8501
+echo Tarayicinizda otomatik acilacak.
+echo Acilmazsa: http://localhost:8501
 echo.
-echo Kapatmak icin bu pencereyi kapatabilirsiniz.
+echo Kapatmak icin bu pencereyi kapatin.
 echo.
 
 streamlit run app.py
 
-REM Her durumda pencereyi açık tut
 echo.
 echo ========================================
-echo Kapatmak icin bu pencereyi kapatabilirsiniz.
+echo   Uygulama kapandi.
 echo ========================================
 pause >nul

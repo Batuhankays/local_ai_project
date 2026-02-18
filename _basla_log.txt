@@ -1,0 +1,20 @@
+========================================
+   Muhendislik Asistani Baslatiliyor
+========================================
+
+[OK] Python bulundu
+
+[OK] Sanal ortam mevcut
+
+[BILGI] Sanal ortam aktive ediliyor...
+[OK] Sanal ortam aktif
+
+[BILGI] Paketler kontrol ediliyor...
+[OK] Paketler zaten yuklu
+
+[BILGI] Ollama kontrol ediliyor...
+[OK] Ollama calisiyor
+
+[BILGI] Mistral modeli kontrol ediliyor...
+
+Simdi indirilsin mi? (E=Evet, N=Hayir) [E,N]?Terminate batch job (Y/N)? 

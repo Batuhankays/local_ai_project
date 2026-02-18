@@ -335,9 +335,7 @@ CEVAP FORMATI:
 
 YAPMA:
 - Genel tavsiyeler verme, spesifik ol
-- Speküla
-
-syon yapma, sadece dokümanlara dayanarak cevap ver
+- Spekülasyon yapma, sadece dokümanlara dayanarak cevap ver
 - Uzun giriş paragrafları yazma, direkt konuya gir
 - İngilizce kelime karıştırma
 

@@ -84,9 +84,15 @@ def check_ollama():
     """Ollama servisini kontrol et"""
     try:
         import ollama
-        models = ollama.list()
-        return True, models.get('models', [])
-    except:
+        result = ollama.list()
+        # Yeni API: result.models (ListResponse objesi)
+        # Eski API: result['models'] (dict)
+        if hasattr(result, 'models'):
+            return True, result.models
+        elif isinstance(result, dict):
+            return True, result.get('models', [])
+        return True, []
+    except Exception:
         return False, []
 
 
@@ -128,7 +134,12 @@ with st.sidebar:
     if ollama_ok:
         st.success("✅ Ollama Çalışıyor")
         if ollama_models:
-            st.caption(f"Model: {ollama_models[0].get('name', 'N/A')}")
+            try:
+                m = ollama_models[0]
+                model_name = m.model if hasattr(m, 'model') else m.get('name', m.get('model', 'N/A'))
+                st.caption(f"Model: {model_name}")
+            except Exception:
+                st.caption("Model: Yüklü")
     else:
         st.error("❌ Ollama Bulunamadı")
         st.caption("[Nasıl kurulur?](#)")
@@ -163,9 +174,9 @@ if page == "🏠 Ana Sayfa":
     
     with col2:
         st.markdown("#### 🔧 Arıza Kodları")
-        st.write("✓ 15+ jeneratör arızası")
+        st.write("✓ Jeneratöre özel arıza kodları")
         st.write("✓ Detaylı çözümler")
-        st.write("✓ Bakım periyotları")
+        st.write("✓ PDF'den otomatik oluşturma")
     
     with col3:
         st.markdown("#### 🤖 AI Asistan")
@@ -573,7 +584,12 @@ elif page == "⚙️ Ayarlar":
     # Ollama
     ollama_ok, models = check_ollama()
     if ollama_ok and models:
-        st.write(f"🤖 Ollama Model: {models[0].get('name', 'N/A')}")
+        try:
+            m = models[0]
+            model_name = m.model if hasattr(m, 'model') else m.get('name', m.get('model', 'N/A'))
+            st.write(f"🤖 Ollama Model: {model_name}")
+        except Exception:
+            st.write("🤖 Ollama: Çalışıyor")
     
     # Training durumu
     st.write(f"📊 Training: {'✅ Tamamlandı' if st.session_state.training_done else '❌ Yapılmadı'}")
